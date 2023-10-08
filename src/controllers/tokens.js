@@ -2,7 +2,7 @@
 
 const crypto = require('crypto');
 const { ONE_DAY } = require('../constants');
-const { InvalidValuesError } = require('../errors');
+const { InvalidValuesError, TokenNotFoundError } = require('../errors');
 const { tokensRepository } = require('../repositories');
 
 const generateToken = (createdAt) => ({
@@ -34,6 +34,22 @@ const createTokens = async (numberOfTokens = 1) => {
   };
 };
 
+const checkToken = async (tokenId) => {
+  const token = await tokensRepository.getToken(tokenId);
+  if (!token) {
+    throw new TokenNotFoundError(tokenId);
+  }
+  let status = 'available';
+  if (token.isRedeemed) {
+    status = 'redeemed';
+  } else if (token.expiresAt < Date.now()) {
+    status = 'expired';
+  }
+
+  return { status };
+};
+
 module.exports = {
   createTokens,
+  checkToken,
 };
