@@ -2,6 +2,7 @@
 
 const redis = require('redis');
 const config = require('../../config');
+const { CacheConnectionError } = require('../errors');
 
 const redisClient = redis.createClient({
   host: config.cache.host,
@@ -11,6 +12,14 @@ const redisClient = redis.createClient({
 class TokensRepository {
   constructor(client = redisClient) {
     this.client = client;
+  }
+
+  async init() {
+    try {
+      await this.client.connect();
+    } catch (err) {
+      throw new CacheConnectionError(err.message);
+    }
   }
 
   async saveToken(tokenData) {
