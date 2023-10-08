@@ -6,3 +6,14 @@ services:
     container_name: my-redis-container
     ports:
       - "6379:6379"
+
+  app:
+    build:
+      context: .
+    environment:
+      - CACHE_HOST=redis
+      - CACHE_PORT=6379
+    ports:
+      - "3000:3000"
+    # sleep before starting to allow redis to boot
+    command: sh -c "sleep 1 && npm start"

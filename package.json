@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node ./src",
     "start:watch": "nodemon ./src",
+    "start:local": "docker-compose up -d",
     "test": "jest"
   },
   "keywords": [],

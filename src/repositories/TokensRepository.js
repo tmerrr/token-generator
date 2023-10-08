@@ -5,8 +5,7 @@ const config = require('../config');
 const { CacheConnectionError } = require('../errors');
 
 const redisClient = redis.createClient({
-  host: config.cache.host,
-  port: config.cache.port,
+  url: `redis://${config.cache.host}:${config.cache.port}`,
 });
 
 // the repository abstracts the internal interface of the redis cache / client
