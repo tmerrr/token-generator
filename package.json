@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./index.js",
-    "start:dev": "nodemon ./index.js",
+    "start": "node ./src",
+    "start:dev": "nodemon ./src",
     "test": "jest"
   },
   "keywords": [],

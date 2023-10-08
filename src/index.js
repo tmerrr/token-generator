@@ -1,12 +1,9 @@
 'use strict';
 
-const express = require('express');
-const routers = require('./routers');
+const { port } = require('./config');
+const { serviceName } = require('./constants');
+const app = require('./server');
 
-const app = express();
-
-app.use(express.json());
-
-app.use('/healthcheck', routers.healthcheck)
-
-module.exports = app;
+app.listen(port, () => {
+  console.log(`${serviceName} listening on port ${port}`);
+});
