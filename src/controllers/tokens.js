@@ -1,7 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
-const { ONE_DAY } = require('../constants');
+const { ONE_DAY, TOKEN_STATUSES } = require('../constants');
 const { InvalidValuesError, TokenNotFoundError, TokenAlreadyRedeemedError, TokenExpiredError } = require('../errors');
 const { tokensRepository } = require('../repositories');
 
@@ -46,11 +46,11 @@ const createTokens = async (numberOfTokens = 1) => {
 
 const checkToken = async (tokenId) => {
   const token = await getTokenOrFail(tokenId);
-  let status = 'available';
+  let status = TOKEN_STATUSES.AVAILABLE;
   if (token.isRedeemed) {
-    status = 'redeemed';
+    status = TOKEN_STATUSES.REDEEMED;
   } else if (hasTokenExpired(token)) {
-    status = 'expired';
+    status = TOKEN_STATUSES.EXPIRED;
   }
 
   return { status };

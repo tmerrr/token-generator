@@ -26,6 +26,8 @@ class TokensRepository {
   }
 
   // TS would be preferred to ensure tokenData has correct attributes
+  // this function acts as an upsert, so will overwrite data if the key already exists
+  // improvement would be to have clearer separation, one to save a new token and another to update existing value
   async saveToken(tokenData) {
     await this.client.set(
       tokenData.id,

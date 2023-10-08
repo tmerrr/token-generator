@@ -1,5 +1,6 @@
 'use strict';
 
+const { TOKEN_STATUSES } = require('../constants');
 const {
   BaseError,
   InvalidValuesError,
@@ -8,6 +9,7 @@ const {
   TokenExpiredError,
 } = require('../errors');
 
+// default error handler middleware is responsible for checking errors thrown and mapping to desired response and status code
 const errorHandler = () => (err, req, res, next) => {
   if (req.headersSent) {
     return next();
@@ -33,9 +35,9 @@ const errorHandler = () => (err, req, res, next) => {
     res.status(404).json(errResponse);
     res.status(404);
   } else if (err instanceof TokenExpiredError) {
-    res.status(410).json({ result: 'expired' });
+    res.status(410).json({ result: TOKEN_STATUSES.EXPIRED });
   } else if (err instanceof TokenAlreadyRedeemedError) {
-    res.status(410).json({ result: 'redeemed' });
+    res.status(410).json({ result: TOKEN_STATUSES.REDEEMED });
   }
 
   return next();
