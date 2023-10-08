@@ -22,12 +22,13 @@ describe('Tokens Controller', () => {
       jest.spyOn(Date, 'now').mockReturnValueOnce(mockDateNowValue);
 
       const numberOfTokens = 5;
-      const result = await createTokens(numberOfTokens);
-      expect(result).toHaveLength(numberOfTokens);
-      result.forEach((data) => {
+      const { created, tokens} = await createTokens(numberOfTokens);
+      expect(created).toEqual(new Date(mockDateNowValue).toISOString());
+      expect(tokens).toHaveLength(numberOfTokens);
+      tokens.forEach((data) => {
         expect(data).toEqual(expect.any(String));
       });
-      expect(hasUniqueValues(result)).toBe(true);
+      expect(hasUniqueValues(tokens)).toBe(true);
       expect(tokensRepository.saveToken).toHaveBeenCalledTimes(numberOfTokens);
       expect(tokensRepository.saveToken).toHaveBeenCalledWith({
         id: expect.any(String),
@@ -38,13 +39,15 @@ describe('Tokens Controller', () => {
     });
 
     it('defaults to creating 1 token when no argument provided', async () => {
-      const result = await createTokens();
-      expect(result).toHaveLength(1);
+      const { tokens } = await createTokens();
+      expect(tokens).toHaveLength(1);
       expect(tokensRepository.saveToken).toHaveBeenCalledTimes(1);
     });
 
     it('throws an InvalidValuesError when argument is less than 0', async () => {
-      expect(() => createTokens(-1)).toThrowError(new InvalidValuesError('Number of tokens must be greater than 0'));
+      await expect(() => createTokens(-1))
+        .rejects
+        .toThrowError(new InvalidValuesError('Number of tokens must be greater than 0'));
     });
   });
 });

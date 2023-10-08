@@ -12,7 +12,7 @@ const generateToken = (createdAt) => ({
   expiresAt: createdAt + (10 * ONE_DAY),
 });
 
-const createTokens = (numberOfTokens = 1) => {
+const createTokens = async (numberOfTokens = 1) => {
   if (numberOfTokens < 0) {
     throw new InvalidValuesError('Number of tokens must be greater than 0')
   }
@@ -21,12 +21,17 @@ const createTokens = (numberOfTokens = 1) => {
     .fill()
     .map(() => generateToken(createdAt));
 
-  return tokens.reduce(async (tokenIdsPromise, token) => {
-    const tokenIds = await tokenIdsPromise;
+  const tokenIds = await tokens.reduce(async (accPromise, token) => {
+    const acc = await accPromise;
     await tokensRepository.saveToken(token);
-    tokenIds.push(token.id);
-    return tokenIds;
+    acc.push(token.id);
+    return acc;
   }, []);
+
+  return {
+    created: new Date(createdAt).toISOString(),
+    tokens: tokenIds,
+  };
 };
 
 module.exports = {
