@@ -1,5 +1,6 @@
 'use strict';
 
+const { CacheConnectionError } = require('../../../src/errors');
 const TokensRepository = require('../../../src/repositories/tokens');
 
 const mockRedisClient = {
@@ -12,6 +13,21 @@ const tokensRepository = new TokensRepository(mockRedisClient);
 describe('Tokens Repository', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+  });
+
+  describe('init', () => {
+    it('successfully connects to the cache', async () => {
+      await tokensRepository.init();
+      expect(mockRedisClient.connect).toHaveBeenCalledTimes(1);
+    });
+
+    it('throws a CacheConnectionError when it fails to connect', async () => {
+      const mockError = new Error('Connection failed');
+      mockRedisClient.connect.mockRejectedValueOnce(mockError);
+      await expect(() => tokensRepository.init())
+        .rejects
+        .toThrowError(new CacheConnectionError(mockError.message));
+    });
   });
 
   describe('saveToken', () => {
