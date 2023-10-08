@@ -1,9 +1,9 @@
 'use strict';
 
 const { port } = require('./config');
-const { serviceName } = require('./constants');
+const { SERVICE_NAME } = require('./constants');
 const app = require('./server');
 
 app.listen(port, () => {
-  console.log(`${serviceName} listening on port ${port}`);
+  console.log(`${SERVICE_NAME} listening on port ${port}`);
 });

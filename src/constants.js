@@ -3,5 +3,6 @@
 const { name } = require('../package.json');
 
 module.exports = {
-  serviceName: name,
+  SERVICE_NAME: name,
+  ONE_DAY: 24 * 60 * 60 * 1_000,
 };
