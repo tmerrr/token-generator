@@ -1,7 +1,7 @@
 'use strict';
 
 const { CacheConnectionError } = require('../../../src/errors');
-const TokensRepository = require('../../../src/repositories/tokens');
+const TokensRepository = require('../../../src/repositories/TokensRepository');
 
 const mockRedisClient = {
   connect: jest.fn(),
