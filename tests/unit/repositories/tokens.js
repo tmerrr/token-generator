@@ -6,6 +6,7 @@ const TokensRepository = require('../../../src/repositories/tokens');
 const mockRedisClient = {
   connect: jest.fn(),
   set: jest.fn(),
+  get: jest.fn(),
 };
 
 const tokensRepository = new TokensRepository(mockRedisClient);
@@ -34,8 +35,9 @@ describe('Tokens Repository', () => {
     it('should store the token data correctly', async () => {
       const tokenData = {
         id: 'token-id',
-        is_redeemed: false,
+        isRedeemed: false,
         createdAt: Date.now(),
+        expiresAt: Date.now() + (24 * 60 * 60 * 1_000), // plus one day
       };
       await tokensRepository.saveToken(tokenData);
       expect(mockRedisClient.set).toHaveBeenCalledTimes(1);
@@ -43,6 +45,28 @@ describe('Tokens Repository', () => {
         tokenData.id,
         JSON.stringify(tokenData),
       );
+    });
+  });
+
+  describe('getToken', () => {
+    it('should return token data when found', async () => {
+      const tokenData = {
+        id: 'token-id',
+        isRedeemed: true,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + (24 * 60 * 60 * 1_000), // plus one day
+      };
+      mockRedisClient.get.mockResolvedValueOnce(JSON.stringify(tokenData));
+      const result = await tokensRepository.getToken(tokenData.id);
+      expect(result).toEqual(tokenData);
+      expect(mockRedisClient.get).toHaveBeenCalledTimes(1);
+      expect(mockRedisClient.get).toHaveBeenCalledWith(tokenData.id);
+    });
+
+    it('should return null when token not found', async () => {
+      mockRedisClient.get.mockResolvedValueOnce(null);
+      const result = await tokensRepository.getToken('id');
+      expect(result).toBeNull();
     });
   });
 });
