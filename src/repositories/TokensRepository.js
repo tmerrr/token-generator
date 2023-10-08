@@ -1,7 +1,7 @@
 'use strict';
 
 const redis = require('redis');
-const config = require('../../config');
+const config = require('../config');
 const { CacheConnectionError } = require('../errors');
 
 const redisClient = redis.createClient({
