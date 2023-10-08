@@ -31,8 +31,19 @@ class InvalidValuesError extends BaseError {
   }
 }
 
+class TokenNotFoundError extends BaseError {
+  constructor(tokenId) {
+    super(
+      'Token not found',
+      'TKN_NOT_FOUND',
+      `Token with Id: ${tokenId} was not found`,
+    );
+  }
+}
+
 module.exports = {
   BaseError,
   CacheConnectionError,
   InvalidValuesError,
+  TokenNotFoundError,
 };

@@ -2,8 +2,9 @@
 
 const {
   createTokens,
+  checkToken,
 } = require('../../../src/controllers/tokens');
-const { InvalidValuesError } = require('../../../src/errors');
+const { InvalidValuesError, TokenNotFoundError } = require('../../../src/errors');
 const { tokensRepository } = require('../../../src/repositories');
 
 jest.mock('../../../src/repositories');
@@ -48,6 +49,52 @@ describe('Tokens Controller', () => {
       await expect(() => createTokens(-1))
         .rejects
         .toThrowError(new InvalidValuesError('Number of tokens must be greater than 0'));
+    });
+  });
+
+  describe('checkToken', () => {
+    it('returns the status "available" when token is not redeemed or expired', async () => {
+      const tokenData = {
+        id: "tokenId",
+        isRedeemed: false,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 5_000,
+      };
+      tokensRepository.getToken.mockResolvedValueOnce(tokenData);
+      const { status } = await checkToken(tokenData.id);
+      expect(status).toEqual('available');
+    });
+
+    it('returns the status "redeemed" when token has been redeemed', async () => {
+      const tokenData = {
+        id: "tokenId",
+        isRedeemed: true,
+        createdAt: Date.now(),
+        expiresAt: Date.now(),
+      };
+      tokensRepository.getToken.mockResolvedValueOnce(tokenData);
+      const { status } = await checkToken(tokenData.id);
+      expect(status).toEqual('redeemed');
+    });
+
+    it('returns the status "expired" when token has is expired', async () => {
+      const tokenData = {
+        id: "tokenId",
+        isRedeemed: false,
+        createdAt: Date.now(),
+        expiresAt: Date.now() - 1,
+      };
+      tokensRepository.getToken.mockResolvedValueOnce(tokenData);
+      const { status } = await checkToken(tokenData.id);
+      expect(status).toEqual('expired');
+    });
+
+    it('throws a TokenNotFoundError when the token does not exist', async () => {
+      tokensRepository.getToken.mockResolvedValueOnce(null);
+      const tokenId = 'tokenId';
+      await expect(() => checkToken(tokenId))
+        .rejects
+        .toThrowError(new TokenNotFoundError(tokenId));
     });
   });
 });
