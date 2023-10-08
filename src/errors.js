@@ -21,7 +21,18 @@ class CacheConnectionError extends BaseError {
   }
 }
 
+class InvalidValuesError extends BaseError {
+  constructor(details) {
+    super(
+      'Invalid data provided',
+      'INVALID_VAL',
+      details,
+    );
+  }
+}
+
 module.exports = {
   BaseError,
   CacheConnectionError,
+  InvalidValuesError,
 };

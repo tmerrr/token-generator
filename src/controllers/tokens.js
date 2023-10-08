@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const { ONE_DAY } = require('../constants');
+const { InvalidValuesError } = require('../errors');
 const { tokensRepository } = require('../repositories');
 
 const generateToken = (createdAt) => ({
@@ -11,7 +12,10 @@ const generateToken = (createdAt) => ({
   expiresAt: createdAt + (10 * ONE_DAY),
 });
 
-const createTokens = (numberOfTokens) => {
+const createTokens = (numberOfTokens = 1) => {
+  if (numberOfTokens < 0) {
+    throw new InvalidValuesError('Number of tokens must be greater than 0')
+  }
   const createdAt = Date.now();
   const tokens = new Array(numberOfTokens)
     .fill()
