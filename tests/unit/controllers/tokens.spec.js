@@ -114,7 +114,7 @@ describe('Tokens Controller', () => {
       };
       tokensRepository.getToken.mockResolvedValueOnce(tokenData);
       const { result } = await redeemToken(tokenData.id);
-      expect(result).toEqual('available');
+      expect(result).toEqual('ok');
       expect(tokensRepository.saveToken).toHaveBeenCalledTimes(1);
       expect(tokensRepository.saveToken).toHaveBeenCalledWith({
         ...tokenData,
