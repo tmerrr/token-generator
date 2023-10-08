@@ -41,9 +41,30 @@ class TokenNotFoundError extends BaseError {
   }
 }
 
+class TokenAlreadyRedeemedError extends BaseError {
+  constructor(tokenId) {
+    super(
+      'Token has already been redeemed',
+      'TKN_REDEEMED',
+      `Token with Id: ${tokenId} has already been redeemed`,
+    );
+  }
+}
+class TokenExpiredError extends BaseError {
+  constructor(tokenId) {
+    super(
+      'Token has expired',
+      'TKN_EXPIRED',
+      `Token with Id: ${tokenId} has expired and cannot be redeemed`,
+    );
+  }
+}
+
 module.exports = {
   BaseError,
   CacheConnectionError,
   InvalidValuesError,
   TokenNotFoundError,
+  TokenAlreadyRedeemedError,
+  TokenExpiredError,
 };

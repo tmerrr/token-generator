@@ -3,8 +3,14 @@
 const {
   createTokens,
   checkToken,
+  redeemToken,
 } = require('../../../src/controllers/tokens');
-const { InvalidValuesError, TokenNotFoundError } = require('../../../src/errors');
+const {
+  InvalidValuesError,
+  TokenNotFoundError,
+  TokenAlreadyRedeemedError,
+  TokenExpiredError,
+} = require('../../../src/errors');
 const { tokensRepository } = require('../../../src/repositories');
 
 jest.mock('../../../src/repositories');
@@ -93,6 +99,59 @@ describe('Tokens Controller', () => {
       tokensRepository.getToken.mockResolvedValueOnce(null);
       const tokenId = 'tokenId';
       await expect(() => checkToken(tokenId))
+        .rejects
+        .toThrowError(new TokenNotFoundError(tokenId));
+    });
+  });
+
+  describe('redeemToken', () => {
+    it('returns the result "ok" and updates the token, when token is not redeemed or expired', async () => {
+      const tokenData = {
+        id: "tokenId",
+        isRedeemed: false,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 5_000,
+      };
+      tokensRepository.getToken.mockResolvedValueOnce(tokenData);
+      const { result } = await redeemToken(tokenData.id);
+      expect(result).toEqual('available');
+      expect(tokensRepository.saveToken).toHaveBeenCalledTimes(1);
+      expect(tokensRepository.saveToken).toHaveBeenCalledWith({
+        ...tokenData,
+        isRedeemed: true,
+      });
+    });
+
+    it('throws a TokenAlreadyRedeemedError when the token has been redeemed', async () => {
+      const tokenData = {
+        id: "tokenId",
+        isRedeemed: true,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 5_000,
+      };
+      tokensRepository.getToken.mockResolvedValueOnce(tokenData);
+      await expect(() => redeemToken(tokenData.id))
+        .rejects
+        .toThrowError(new TokenAlreadyRedeemedError(tokenData.id));
+    });
+
+    it('throws a TokenExpiredError when the token has expired', async () => {
+      const tokenData = {
+        id: "tokenId",
+        isRedeemed: false,
+        createdAt: Date.now(),
+        expiresAt: Date.now() - 1,
+      };
+      tokensRepository.getToken.mockResolvedValueOnce(tokenData);
+      await expect(() => redeemToken(tokenData.id))
+        .rejects
+        .toThrowError(new TokenExpiredError(tokenData.id));
+    });
+
+    it('throws a TokenNotFoundError when the token does not exist', async () => {
+      tokensRepository.getToken.mockResolvedValueOnce(null);
+      const tokenId = 'tokenId';
+      await expect(() => redeemToken(tokenId))
         .rejects
         .toThrowError(new TokenNotFoundError(tokenId));
     });
