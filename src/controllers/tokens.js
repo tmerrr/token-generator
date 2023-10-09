@@ -5,6 +5,8 @@ const { ONE_DAY, TOKEN_STATUSES } = require('../constants');
 const { InvalidValuesError, TokenNotFoundError, TokenAlreadyRedeemedError, TokenExpiredError } = require('../errors');
 const { tokensRepository } = require('../repositories');
 
+// tokens are created with an "expiresAt" to make it easier to check expiry dates later
+// also saves having duplicated logic of checking expiry dates
 const generateToken = (createdAt) => ({
   id: crypto.randomBytes(32).toString('hex'),
   isRedeemed: false,
@@ -31,6 +33,9 @@ const createTokens = async (numberOfTokens = 1) => {
     .fill()
     .map(() => generateToken(createdAt));
 
+  // decided to use an async reduce function over Promise.all(tokens.map) approach
+  // in case user requests very high number of tokens to be generated
+  // request / response times may be slightly slower, but this reduces load on the DB / cache service
   const tokenIds = await tokens.reduce(async (accPromise, token) => {
     const acc = await accPromise;
     await tokensRepository.saveToken(token);

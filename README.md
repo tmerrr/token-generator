@@ -54,3 +54,4 @@ For this exercise, tokens can be just a random non-sequential string. Tokens exp
 - Logging: If this were a real application to be deployed, this would ideally have logging per request to allow for easy tracing of requests and debugging of errors
 - Component / feature tests: Add further tests cases for more edge cases
 - Validate requests: Middleware component to validate request values against schema
+- TypeScript: preference would be to have created the service in TS in order to add some type safety across the service
