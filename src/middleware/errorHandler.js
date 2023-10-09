@@ -11,7 +11,7 @@ const {
 
 // default error handler middleware is responsible for checking errors thrown and mapping to desired response and status code
 const errorHandler = () => (err, req, res, next) => {
-  if (req.headersSent) {
+  if (res.headersSent) {
     return next();
   }
 
@@ -31,10 +31,8 @@ const errorHandler = () => (err, req, res, next) => {
 
   if (err instanceof InvalidValuesError) {
     res.status(400).json(errResponse);
-    res.status(400);
   } else if (err instanceof TokenNotFoundError) {
     res.status(404).json(errResponse);
-    res.status(404);
   } else if (err instanceof TokenExpiredError) {
     res.status(410).json({ result: TOKEN_STATUSES.EXPIRED });
   } else if (err instanceof TokenAlreadyRedeemedError) {
