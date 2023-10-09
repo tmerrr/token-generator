@@ -1,0 +1,149 @@
+openapi: 3.0.0
+info:
+  title: Token Service API
+  description: API for managing tokens
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/tokens
+paths:
+  /generate:
+    post:
+      summary: Generate a N number of tokens
+      operationId: generateTokens
+      parameters:
+        - name: tokens
+          in: query
+          required: true
+          description: "Number of tokens to generate (minimum: 1, maximum: 100)"
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Tokens generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateTokensResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /check/{tokenId}:
+    get:
+      summary: Check token status
+      operationId: checkTokenStatus
+      parameters:
+        - name: tokenId
+          in: path
+          required: true
+          description: Unique identifier of the token to check
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenStatusResponse'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /redeem/{tokenId}:
+    put:
+      summary: Redeem a token
+      operationId: redeemToken
+      parameters:
+        - name: tokenId
+          in: path
+          required: true
+          description: Unique identifier of the token to redeem
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token redeemed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RedeemTokenSuccessResponse"
+        '404':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '410':
+          description: Token already redeemed or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RedeemTokenErrorResponse"
+
+components:
+  schemas:
+    GenerateTokensResponse:
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: Timestamp indicating when the tokens were created
+        tokens:
+          type: array
+          items:
+            type: string
+          description: Array of unique identifiers for the generated tokens
+
+    TokenStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Current status of the token
+          enum:
+            - "available"
+            - "redeemed"
+            - "expired"
+            
+    RedeemTokenSuccessResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          enum:
+            - "ok"
+            
+    RedeemTokenErrorResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          enum:
+            - "redeemed"
+            - "expired"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: High level description of the error that occurred
+          example: "Resource Not Found"
+        details:
+          type: string
+          description: Detailed description of the error
+          example: "Token with Id: 'absc123' was not found"
+        code:
+          type: string
+          description: Unique code to identify the error that occurred
+          example: "TKN_NOT_FOUND"

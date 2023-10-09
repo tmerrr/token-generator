@@ -26,6 +26,7 @@ const errorHandler = () => (err, req, res, next) => {
   const errResponse = {
     message: err.message,
     details: err.details,
+    code: err.code,
   };
 
   if (err instanceof InvalidValuesError) {

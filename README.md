@@ -21,7 +21,7 @@ For this exercise, tokens can be just a random non-sequential string. Tokens exp
 }
 ```
 
-### GET /tokens//check/{token}
+### GET /tokens/check/{token}
 #### 200 OK
 ```json
 {
@@ -29,7 +29,7 @@ For this exercise, tokens can be just a random non-sequential string. Tokens exp
 }
 ```
 
-### GET /tokens//check/{token}
+### PUT /tokens/redeem/{token}
 #### 200 OK
 ```json
 {
@@ -52,3 +52,4 @@ For this exercise, tokens can be just a random non-sequential string. Tokens exp
 ## Future Improvements
 - Component / feature tests: Would ideally have another suite of tests that check the behaviour of the API, ensuring each endpoint is available and returning the correct data. Left this for now as can be lengthy to setup
 - Logging: If this were a real application to be deployed, this would ideally have logging per request to allow for easy tracing of requests and debugging of errors
+- Validate requests: Middleware component to validate request values against schema
