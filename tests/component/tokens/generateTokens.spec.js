@@ -1,7 +1,6 @@
 'use strict';
 
-const axios = require('axios');
-const { TEST_URL } = require('../config');
+const request = require('../request');
 
 const METHOD = 'POST';
 const ENDPOINT = '/tokens/generate';
@@ -11,12 +10,10 @@ describe(`${METHOD} ${ENDPOINT}`, () => {
     const numberOfTokens = 10;
     let response;
     beforeAll(async () => {
-      response = await axios({
+      response = await request({
         method: METHOD,
-        url: `${TEST_URL}${ENDPOINT}`,
-        params: { tokens: numberOfTokens },
-        // don't throw error on error status codes
-        validateStatus: () => true,
+        path: ENDPOINT,
+        params: { tokens: numberOfTokens }
       });
     });
 
@@ -38,12 +35,10 @@ describe(`${METHOD} ${ENDPOINT}`, () => {
     const numberOfTokens = -1;
     let response;
     beforeAll(async () => {
-      response = await axios({
+      response = await request({
         method: METHOD,
-        url: `${TEST_URL}${ENDPOINT}`,
-        params: { tokens: numberOfTokens },
-        // don't throw error on error status codes
-        validateStatus: () => true,
+        path: ENDPOINT,
+        params: { tokens: numberOfTokens }
       });
     });
 

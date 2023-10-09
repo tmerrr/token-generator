@@ -48,8 +48,9 @@ For this exercise, tokens can be just a random non-sequential string. Tokens exp
 
 - Simple run `npm run start:local` to boot both the app and redis server locally, using docker compose.  The app will be exposed on port 3000
 - To check app is running correctly: `curl http://localhost:3000/healthcheck/ping`
+- Run both unit and component tests: `npm test` (Server must be running for component tests to run, use above steps to run server first)
 
 ## Future Improvements
-- Component / feature tests: Would ideally have another suite of tests that check the behaviour of the API, ensuring each endpoint is available and returning the correct data. Left this for now as can be lengthy to setup
 - Logging: If this were a real application to be deployed, this would ideally have logging per request to allow for easy tracing of requests and debugging of errors
+- Component / feature tests: Add further tests cases for more edge cases
 - Validate requests: Middleware component to validate request values against schema
